@@ -1,16 +1,17 @@
 <script setup>
+const STORAGE_KEY = 'userFormData';
 
 const step = ref(1)
 const formData = ref({
   mealState: 34,
   gender: null,
   weight: undefined,
-  alcohol: null,
 })
 const genderList = ref(['Homme', 'Femme', 'Autre']);
 const isKeyboardOpen = ref(false);
 
 onMounted(() => {
+  loadStoredData();
   window.visualViewport?.addEventListener("resize", updateButtonPosition);
 });
 
@@ -18,13 +19,20 @@ onUnmounted(() => {
   window.visualViewport?.removeEventListener("resize", updateButtonPosition);
 });
 
+const loadStoredData = () => {
+  const storedData = localStorage.getItem(STORAGE_KEY)
+  formData.value = storedData ? JSON.parse(storedData) : formData.value;
+};
+
 const nextStep = () => {
   step.value++;
-}
+};
 
 const resetForm = () => {
+  formData.value = { mealState: 34, gender: null, weight: undefined };
+  localStorage.removeItem(STORAGE_KEY);
   step.value = 1;
-}
+};
 
 const updateButtonPosition = () => {
   if (window.visualViewport) {
@@ -35,6 +43,9 @@ const updateButtonPosition = () => {
   }
 };
 
+watch(formData, (newData) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+}, { deep: true });
 </script>
 
 <template>
