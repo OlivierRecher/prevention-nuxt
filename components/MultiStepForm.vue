@@ -93,6 +93,7 @@ const updateButtonPosition = () => {
       <AlcoholLevelCalculator />
     </div>
     <UButton
+      v-if="step !== 5"
       :label="step === 1 ? 'Démarrer' : 'Suivant'"
       trailing-icon="i-lucide-arrow-right"
       size="xl"
