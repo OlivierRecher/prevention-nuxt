@@ -1,6 +1,31 @@
 <script setup>
 const alcoholLevel = ref(0);
 const timeBeforeDriving = ref(0);
+const consumptionHistory = ref([]);
+
+const props = defineProps({
+  mealState: Number,
+  gender: String,
+  weight: Number,
+});
+
+function addDrink (amount) {
+  const now = new Date();
+  consumptionHistory.value.push({
+    time: now,
+    amount: amount,
+  });
+  calculateBloodAlcoholLevel();
+}
+
+function calculateBloodAlcoholLevel() {
+  alcoholLevel.value = 0;
+  const r = props.gender === "Homme" ? 0.68 : props.gender === "Femme" ? 0.55 : (0.68 + 0.55) / 2;
+  consumptionHistory.value.forEach((consumption) => {
+    alcoholLevel.value += consumption.amount / (props.weight * r);
+  });
+  alcoholLevel.value = parseFloat(alcoholLevel.value.toFixed(2));
+}
 </script>
 
 <template>
@@ -16,6 +41,7 @@ const timeBeforeDriving = ref(0);
         color="warning"
         variant="outline"
         class="px-4"
+        @click="addDrink(30)"
       />
       <UButton
         label="1/2 vodka"
@@ -23,6 +49,7 @@ const timeBeforeDriving = ref(0);
         color="warning"
         variant="outline"
         class="px-4"
+        @click="addDrink(40)"
       />
       <UButton
         label="3/4 vodka"
@@ -30,6 +57,7 @@ const timeBeforeDriving = ref(0);
         color="warning"
         variant="outline"
         class="px-4"
+        @click="addDrink(60)"
       />
     </div>
     <UButton
@@ -38,6 +66,7 @@ const timeBeforeDriving = ref(0);
       color="warning"
       variant="solid"
       class="px-20"
+      @click="addDrink(10)"
     />
     </div>
   </div>

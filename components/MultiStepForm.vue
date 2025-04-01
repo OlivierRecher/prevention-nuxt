@@ -20,8 +20,10 @@ onUnmounted(() => {
 });
 
 const loadStoredData = () => {
-  const storedData = localStorage.getItem(STORAGE_KEY)
-  formData.value = storedData ? JSON.parse(storedData) : formData.value;
+  const storedData = localStorage.getItem(STORAGE_KEY);
+  if (!storedData) return;
+  formData.value = JSON.parse(storedData);
+  return;
 };
 
 const nextStep = () => {
@@ -101,7 +103,11 @@ watch(formData, (newData) => {
     </div>
 
     <div v-if="step === 5">
-      <AlcoholLevelCalculator />
+      <AlcoholLevelCalculator
+        :meal-state="formData.mealState"
+        :gender="formData.gender"
+        :weight="formData.weight"
+      />
     </div>
     <UButton
       v-if="step !== 5"
