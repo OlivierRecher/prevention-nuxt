@@ -81,7 +81,6 @@ const resetForm = () => {
       variant="solid"
       class="absolute bottom-10 px-20"
       :disabled="
-        (step === 2 && !formData.mealState) || 
         (step === 3 && !formData.gender) || 
         (step === 4 && !formData.weight)
       "
