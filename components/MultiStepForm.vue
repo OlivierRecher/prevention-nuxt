@@ -8,15 +8,15 @@ const formData = ref({
   alcohol: null,
 })
 const genderList = ref(['Homme', 'Femme', 'Autre']);
-const bottomOffset = ref("40px");
+const isKeyboardOpen = ref(false)
 
 onMounted(() => {
-  window.visualViewport?.addEventListener("resize", updateButtonPosition);
-});
+  window.addEventListener('resize', checkKeyboard)
+})
 
 onUnmounted(() => {
-  window.visualViewport?.removeEventListener("resize", updateButtonPosition);
-});
+  window.removeEventListener('resize', checkKeyboard)
+})
 
 const nextStep = () => {
   step.value++;
@@ -26,19 +26,9 @@ const resetForm = () => {
   step.value = 1;
 }
 
-const updateButtonPosition = () => {
-  if (window.visualViewport) {
-    const viewportHeight = window.visualViewport.height;
-    const windowHeight = window.innerHeight;
-    
-    if (viewportHeight < windowHeight) {
-      bottomOffset.value = `${viewportHeight - 40}px`;
-    } else {
-      bottomOffset.value = "40px";
-    }
-  }
-};
-
+const checkKeyboard = () => {
+  isKeyboardOpen.value = window.innerHeight < window.screen.height * 0.7
+}
 </script>
 
 <template>
@@ -94,15 +84,14 @@ const updateButtonPosition = () => {
     <div v-if="step === 5">
       <AlcoholLevelCalculator />
     </div>
-
+    {{ isKeyboardOpen }}
     <UButton
       :label="step === 1 ? 'Démarrer' : 'Suivant'"
       trailing-icon="i-lucide-arrow-right"
       size="xl"
       color="warning"
       variant="solid"
-      class="absolute px-20"
-      :style="{ bottom: bottomOffset }"
+      :class="['absolute px-20', isKeyboardOpen ? 'bottom-60' : 'bottom-10']"
       :disabled="
         (step === 3 && !formData.gender) || 
         (step === 4 && !formData.weight)
