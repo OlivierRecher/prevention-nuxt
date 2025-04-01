@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxtjs/color-mode',
+    '@vite-pwa/nuxt',
   ],
   vite: {
     plugins: [
