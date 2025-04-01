@@ -32,7 +32,7 @@ const updateButtonPosition = () => {
     const windowHeight = window.innerHeight;
     
     if (viewportHeight < windowHeight) {
-      bottomOffset.value = `${windowHeight - viewportHeight - 60}px`;
+      bottomOffset.value = `${viewportHeight - 40}px`;
     } else {
       bottomOffset.value = "40px";
     }
