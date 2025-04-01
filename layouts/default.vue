@@ -4,12 +4,12 @@ const colorMode = useColorMode();
 
 <template>
     <div>
-        <div class="absolute p-4">
+        <div class="absolute right-0 p-4">
             <UButton
             v-if="colorMode.preference === 'dark'"
             icon="i-lucide-sun" 
             size="xl"
-            color="primary"
+            color="warning"
             variant="solid"
             @click="colorMode.preference = 'light'"
         />
@@ -17,7 +17,7 @@ const colorMode = useColorMode();
             v-else
             icon="i-lucide-moon" 
             size="xl"
-            color="primary"
+            color="warning"
             variant="solid"
             @click="colorMode.preference = 'dark'"
         />
