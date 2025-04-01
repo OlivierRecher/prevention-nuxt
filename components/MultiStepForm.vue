@@ -1,7 +1,4 @@
 <script setup>
-import useDetectKeyboardOpen from "use-detect-keyboard-open";
-
-const isKeyboardOpen = useDetectKeyboardOpen();
 const step = ref(1)
 const formData = ref({
   mealState: 34,
@@ -10,13 +7,20 @@ const formData = ref({
   alcohol: null,
 })
 const genderList = ref(['Homme', 'Femme', 'Autre']);
+const buttonBottom = ref('2.5rem')
 
 onMounted(() => {
-  window.addEventListener('resize', checkKeyboard)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', adjustButtonPosition)
+    window.visualViewport.addEventListener('scroll', adjustButtonPosition)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkKeyboard)
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener('resize', adjustButtonPosition)
+    window.visualViewport.removeEventListener('scroll', adjustButtonPosition)
+  }
 })
 
 const nextStep = () => {
@@ -27,8 +31,18 @@ const resetForm = () => {
   step.value = 1;
 }
 
-const checkKeyboard = () => {
-  isKeyboardOpen.value = window.innerHeight < window.screen.height * 0.7
+const adjustButtonPosition = () => {
+  if (window.visualViewport) {
+    const viewportHeight = window.visualViewport.height
+    const screenHeight = window.screen.height
+
+    if (viewportHeight < screenHeight * 0.8) {
+      const offset = screenHeight - viewportHeight
+      buttonBottom.value = `${offset + 10}px`
+    } else {
+      buttonBottom.value = '2.5rem'
+    }
+  }
 }
 </script>
 
@@ -85,14 +99,14 @@ const checkKeyboard = () => {
     <div v-if="step === 5">
       <AlcoholLevelCalculator />
     </div>
-    {{ isKeyboardOpen ? "open" : "close" }}
     <UButton
       :label="step === 1 ? 'Démarrer' : 'Suivant'"
       trailing-icon="i-lucide-arrow-right"
       size="xl"
       color="warning"
       variant="solid"
-      :class="['absolute px-20', isKeyboardOpen ? 'bottom-60' : 'bottom-10']"
+      class="absolute px-20"
+      :style="{ bottom: buttonBottom }"
       :disabled="
         (step === 3 && !formData.gender) || 
         (step === 4 && !formData.weight)
