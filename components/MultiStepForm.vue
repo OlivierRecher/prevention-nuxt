@@ -1,4 +1,5 @@
 <script setup>
+
 const step = ref(1)
 const formData = ref({
   mealState: 34,
@@ -7,21 +8,15 @@ const formData = ref({
   alcohol: null,
 })
 const genderList = ref(['Homme', 'Femme', 'Autre']);
-const buttonBottom = ref('2.5rem')
+const isKeyboardOpen = ref(false);
 
 onMounted(() => {
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', adjustButtonPosition)
-    window.visualViewport.addEventListener('scroll', adjustButtonPosition)
-  }
-})
+  window.visualViewport?.addEventListener("resize", updateButtonPosition);
+});
 
 onUnmounted(() => {
-  if (window.visualViewport) {
-    window.visualViewport.removeEventListener('resize', adjustButtonPosition)
-    window.visualViewport.removeEventListener('scroll', adjustButtonPosition)
-  }
-})
+  window.visualViewport?.removeEventListener("resize", updateButtonPosition);
+});
 
 const nextStep = () => {
   step.value++;
@@ -31,19 +26,15 @@ const resetForm = () => {
   step.value = 1;
 }
 
-const adjustButtonPosition = () => {
+const updateButtonPosition = () => {
   if (window.visualViewport) {
-    const viewportHeight = window.visualViewport.height
-    const screenHeight = window.screen.height
-
-    if (viewportHeight < screenHeight * 0.8) {
-      const offset = screenHeight - viewportHeight
-      buttonBottom.value = `${offset + 10}px`
-    } else {
-      buttonBottom.value = '2.5rem'
-    }
+    const viewportHeight = window.visualViewport.height;
+    const windowHeight = window.innerHeight;
+    
+    isKeyboardOpen.value = viewportHeight < windowHeight;
   }
-}
+};
+
 </script>
 
 <template>
@@ -57,7 +48,7 @@ const adjustButtonPosition = () => {
       @click="resetForm"
     />
   </div>
-  <div class="flex justify-center items-center text-center h-screen">
+  <div class="flex flex-col justify-center items-center text-center h-screen">
 
     <div v-if="step === 1">
       <h2 class="text-5xl font-bold">Bienvenue</h2>
@@ -86,13 +77,15 @@ const adjustButtonPosition = () => {
     </div>
 
     <div v-if="step === 4">
-      <h2>Quel est ton poids ?</h2>
+      <h2 class="text-3xl font-bold mb-10">Quel est ton poids ?</h2>
       <UInputNumber
         v-model="formData.weight"
         placeholder="Poids en kg"
         orientation="vertical"
         min="1"
         max="500"
+        size="xl"
+        class="w-60"
       />
     </div>
 
@@ -105,8 +98,7 @@ const adjustButtonPosition = () => {
       size="xl"
       color="warning"
       variant="solid"
-      class="absolute px-20"
-      :style="{ bottom: buttonBottom }"
+      :class="['px-20', isKeyboardOpen ? 'inline mt-4' : 'absolute bottom-10']"
       :disabled="
         (step === 3 && !formData.gender) || 
         (step === 4 && !formData.weight)
