@@ -7,7 +7,16 @@ const formData = ref({
   weight: undefined,
   alcohol: null,
 })
-const genderList = ref(['Homme', 'Femme', 'Autre'])
+const genderList = ref(['Homme', 'Femme', 'Autre']);
+const bottomOffset = ref("40px");
+
+onMounted(() => {
+  window.visualViewport?.addEventListener("resize", updateButtonPosition);
+});
+
+onUnmounted(() => {
+  window.visualViewport?.removeEventListener("resize", updateButtonPosition);
+});
 
 const nextStep = () => {
   step.value++;
@@ -16,6 +25,19 @@ const nextStep = () => {
 const resetForm = () => {
   step.value = 1;
 }
+
+const updateButtonPosition = () => {
+  if (window.visualViewport) {
+    const viewportHeight = window.visualViewport.height;
+    const windowHeight = window.innerHeight;
+    
+    if (viewportHeight < windowHeight) {
+      bottomOffset.value = `${windowHeight - viewportHeight - 60}px`;
+    } else {
+      bottomOffset.value = "40px";
+    }
+  }
+};
 
 </script>
 
@@ -79,7 +101,8 @@ const resetForm = () => {
       size="xl"
       color="warning"
       variant="solid"
-      class="absolute bottom-10 px-20"
+      class="absolute px-20"
+      :style="{ bottom: bottomOffset }"
       :disabled="
         (step === 3 && !formData.gender) || 
         (step === 4 && !formData.weight)

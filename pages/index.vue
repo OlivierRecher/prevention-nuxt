@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <div class="overflow-hidden">
+    <div>
        <MultiStepForm />
     </div>
 </template>
