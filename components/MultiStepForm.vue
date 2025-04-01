@@ -1,5 +1,7 @@
 <script setup>
+import useDetectKeyboardOpen from "use-detect-keyboard-open";
 
+const isKeyboardOpen = useDetectKeyboardOpen();
 const step = ref(1)
 const formData = ref({
   mealState: 34,
@@ -8,7 +10,6 @@ const formData = ref({
   alcohol: null,
 })
 const genderList = ref(['Homme', 'Femme', 'Autre']);
-const isKeyboardOpen = ref(false)
 
 onMounted(() => {
   window.addEventListener('resize', checkKeyboard)
@@ -84,7 +85,7 @@ const checkKeyboard = () => {
     <div v-if="step === 5">
       <AlcoholLevelCalculator />
     </div>
-    {{ isKeyboardOpen }}
+    {{ isKeyboardOpen ? "open" : "close" }}
     <UButton
       :label="step === 1 ? 'Démarrer' : 'Suivant'"
       trailing-icon="i-lucide-arrow-right"
