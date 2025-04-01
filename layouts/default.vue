@@ -3,7 +3,7 @@ const colorMode = useColorMode();
 </script>
 
 <template>
-    <div class="overflow-hidden h-screen w-screen">
+    <div class="flex flex-col min-h-screen overflow-hidden">
         <div class="absolute right-0 p-4">
             <UButton
             v-if="colorMode.preference === 'dark'"

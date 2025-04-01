@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
