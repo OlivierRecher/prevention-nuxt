@@ -1,7 +1,10 @@
 <script setup>
 const alcoholLevel = ref(0);
+const timeStartDrinking = ref(null);
 const timeBeforeDriving = ref(0);
 const consumptionHistory = ref([]);
+
+let intervalID = null;
 
 const props = defineProps({
   mealState: Number,
@@ -15,6 +18,9 @@ function addDrink (amount) {
     time: now,
     amount: amount,
   });
+  if (timeStartDrinking.value === null) {
+    timeStartDrinking.value = consumptionHistory.value[0].time;
+  }
   calculateBloodAlcoholLevel();
 }
 
@@ -26,6 +32,23 @@ function calculateBloodAlcoholLevel() {
   });
   alcoholLevel.value = parseFloat(alcoholLevel.value.toFixed(2));
 }
+
+// Chaque heure c'est -0,10g/L soit -0,01g/L tout les 6min
+const decreaseAlcoholLevel = () => {
+  if (alcoholLevel.value > 0) {
+    alcoholLevel.value = parseFloat(Math.max(0, alcoholLevel.value - 0.01).toFixed(2));
+    return;
+  }
+  clearInterval(intervalID);
+  intervalID = null;
+};
+
+watch(alcoholLevel, (newVal) => {
+  if (newVal > 0 && !intervalID) {
+    intervalID = setInterval(decreaseAlcoholLevel, 6 * 60 * 1000);
+  }
+});
+
 </script>
 
 <template>
