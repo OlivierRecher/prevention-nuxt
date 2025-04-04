@@ -81,18 +81,19 @@ watch(alcoholLevel, (newVal) => {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center text-center">
-    <h1 class="text-3xl font-bold">{{ alcoholLevel }} g/L d'alcool dans le sang</h1>
-    <h2 class="text-3xl font-bold">
-      Vous pouvez reprendre le volant
-      <span v-if="timeBeforeDriving === 0">.</span>
-      <span v-else>
-      dans {{ Math.floor(timeBeforeDriving / 60) }}h{{ Math.floor(timeBeforeDriving % 60) }}min.
-      </span>
-    </h2>
-    <h3 class="text-md font-light">Ce calculateur ne remplace pas un éthylotest.</h3>
-    <h3 class="text-md font-light">Soyez prudent en conduisant.</h3>
-  
+  <div class="flex flex-col justify-between items-center h-screen">
+    <div class="flex flex-col justify-center items-center text-center h-screen">
+      <h1 class="text-3xl font-bold">{{ alcoholLevel }} g/L d'alcool dans le sang</h1>
+      <h2 class="text-3xl font-bold">
+        Vous pouvez reprendre le volant
+        <span v-if="timeBeforeDriving === 0">.</span>
+        <span v-else>
+        dans {{ Math.floor(timeBeforeDriving / 60) }}h{{ Math.floor(timeBeforeDriving % 60) }}min.
+        </span>
+      </h2>
+      <h3 class="text-md font-light">Ce calculateur ne remplace pas un éthylotest.</h3>
+      <h3 class="text-md font-light">Soyez prudent en conduisant.</h3>
+    </div>
     <div class="absolute bottom-10">
       <UDrawer
         @update:open="calculateVomitingElimination"
@@ -101,7 +102,7 @@ watch(alcoholLevel, (newVal) => {
           :show="!hasDrawerOpened && !timeStartDrinking"
           size="2xl"
         >
-          <span v-if="!hasDrawerOpened" class="absolute inline-flex h-full w-full animate-ping rounded-lg bg-green-400 opacity-25" />
+          <span v-if="!hasDrawerOpened" class="inline-flex h-full w-full animate-ping rounded-lg bg-green-400 opacity-25" />
           <UButton
           label="Vomir pour repartir"
           size="xl"
