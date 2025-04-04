@@ -3,7 +3,7 @@ const STORAGE_KEY = 'userFormData';
 
 const step = ref(1)
 const formData = ref({
-  mealState: 34,
+  timeAssimilation: 15,
   gender: null,
   weight: undefined,
 })
@@ -31,7 +31,7 @@ const nextStep = () => {
 };
 
 const resetForm = () => {
-  formData.value = { mealState: 34, gender: null, weight: undefined };
+  formData.value = { timeAssimilation: 15, gender: null, weight: undefined };
   localStorage.removeItem(STORAGE_KEY);
   step.value = 1;
 };
@@ -71,10 +71,10 @@ watch(formData, (newData) => {
       <h2 class="text-3xl font-bold mb-10">Comment évaluerais-tu la qualité de ton repas ?</h2>
       <div class="px-10">
         <USlider
-        v-model="formData.mealState"
+        v-model="formData.timeAssimilation"
         color="warning"
-        step="34"
-        :default-value="34"
+        step="15"
+        max="45"
       />
       </div>
     </div>
@@ -104,7 +104,7 @@ watch(formData, (newData) => {
 
     <div v-if="step === 5">
       <AlcoholLevelCalculator
-        :meal-state="formData.mealState"
+        :time-assimilation="formData.timeAssimilation + 15"
         :gender="formData.gender"
         :weight="formData.weight"
       />
