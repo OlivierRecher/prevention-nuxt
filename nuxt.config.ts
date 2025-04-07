@@ -1,5 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -20,9 +19,48 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
     preference: 'light',
-    fallback: 'light'
+    fallback: 'light',
   },
   nitro: {
-    preset: "vercel"
+    preset: 'vercel',
+  },
+
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'Alcoolémie App',
+      short_name: 'Alcoolémie',
+      description: 'Calcule ton taux d’alcool dans le sang facilement',
+      lang: 'fr',
+      start_url: '/',
+      display: 'standalone',
+      background_color: '#ffffff',
+      theme_color: '#efb100',
+      icons: [
+        {
+          src: '/icon-192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: '/icon-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+        {
+          src: '/icon-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable',
+        },
+      ],
+    },
+    workbox: {
+      navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,json}'],
+    },
+    client: {
+      installPrompt: true,
+    },
   },
 })
