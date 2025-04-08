@@ -68,4 +68,16 @@ export default defineNuxtConfig({
       installPrompt: true,
     },
   },
+  app: {
+    head: {
+      link: [
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      ],
+      meta: [
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+        { name: 'apple-mobile-web-app-title', content: 'Alcoolémie' },
+      ],
+    },
+  }
 })

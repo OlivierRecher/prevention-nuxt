@@ -1,5 +1,8 @@
 <script setup>
+import { getConsumptionHistory, setConsumptionHistory } from '@/stores/store.js';
+
 const alcoholLevel = ref(0);
+const genderFactor = ref(0);
 const potentialAlcoholEliminationByVomiting = ref(0);
 const timeStartDrinking = ref(null);
 const timeBeforeSober = ref(0);
@@ -17,6 +20,16 @@ const props = defineProps({
 
 onMounted(() => {
   hasDrawerOpened.value = false;
+  genderFactor.value = props.gender === "Homme" ? 0.68 : props.gender === "Femme" ? 0.55 : (0.68 + 0.55) / 2;
+  const storedData = getConsumptionHistory();
+
+  if (!storedData) return;
+  consumptionHistory.value = storedData;
+
+  if (consumptionHistory.value.length < 1) return;
+  timeStartDrinking.value = consumptionHistory.value[0].time;
+  calculateBloodAlcoholLevel();
+  calculateTime();
 });
 
 function addDrink (amount) {
@@ -28,15 +41,15 @@ function addDrink (amount) {
   if (timeStartDrinking.value === null) {
     timeStartDrinking.value = consumptionHistory.value[0].time;
   }
+  setConsumptionHistory(consumptionHistory.value);
   calculateBloodAlcoholLevel();
   calculateTime();
 }
 
 function calculateBloodAlcoholLevel() {
   alcoholLevel.value = 0;
-  const r = props.gender === "Homme" ? 0.68 : props.gender === "Femme" ? 0.55 : (0.68 + 0.55) / 2;
   consumptionHistory.value.forEach((consumption) => {
-    alcoholLevel.value += consumption.amount / (props.weight * r);
+    alcoholLevel.value += consumption.amount / (props.weight * genderFactor.value);
   });
   alcoholLevel.value = parseFloat(alcoholLevel.value.toFixed(2));
 }
@@ -64,7 +77,7 @@ const calculateVomitingElimination = () => {
     return (now - consumption.time) / (1000 * 60) <= props.timeAssimilation;
   }).reduce((sum, consumption) => sum + consumption.amount, 0);
 
-  potentialAlcoholEliminationByVomiting.value = parseFloat((potentialAlcoholAmountEliminable / (props.weight * (props.gender === "Homme" ? 0.68 : props.gender === "Femme" ? 0.55 : (0.68 + 0.55) / 2))).toFixed(2));
+  potentialAlcoholEliminationByVomiting.value = parseFloat((potentialAlcoholAmountEliminable / (props.weight * genderFactor.value)).toFixed(2));
 }
 
 const EliminationByVomiting = () => {

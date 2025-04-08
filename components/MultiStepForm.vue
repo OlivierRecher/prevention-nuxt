@@ -1,5 +1,5 @@
 <script setup>
-const STORAGE_KEY = 'userFormData';
+import { getFormData, setFormData, clearFormData, clearConsumptionHistory } from '@/stores/store.js';
 
 const step = ref(1)
 const formData = ref({
@@ -20,7 +20,7 @@ onUnmounted(() => {
 });
 
 const loadStoredData = () => {
-  const storedData = localStorage.getItem(STORAGE_KEY);
+  const storedData = getFormData();
   if (!storedData) return;
   formData.value = JSON.parse(storedData);
   return;
@@ -32,7 +32,8 @@ const nextStep = () => {
 
 const resetForm = () => {
   formData.value = { timeAssimilation: 15, gender: null, weight: undefined };
-  localStorage.removeItem(STORAGE_KEY);
+  clearFormData();
+  clearConsumptionHistory();
   step.value = 1;
 };
 
@@ -46,7 +47,7 @@ const updateButtonPosition = () => {
 };
 
 watch(formData, (newData) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+  setFormData(newData);
 }, { deep: true });
 </script>
 
