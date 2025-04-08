@@ -33,7 +33,6 @@ const nextStep = () => {
 };
 
 const resetForm = () => {
-  formData.value = { timeAssimilation: 15, gender: null, weight: undefined };
   clearFormData();
   clearConsumptionHistory();
   step.value = 1;
