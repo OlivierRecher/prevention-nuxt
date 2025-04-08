@@ -28,9 +28,9 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Alcoolémie App',
-      short_name: 'Alcoolémie',
-      description: 'Calcule ton taux d’alcool dans le sang facilement',
+      name: 'Alcoolytics',
+      short_name: 'Alcoolytics',
+      description: 'Application pour suivre facilement et efficacement votre consommation d\'alcool durant une soirée, un apéro, un repas. Vous obtiendrez une estimation rapide de votre taux d\'alcoolémie.',
       lang: 'fr',
       start_url: '/',
       display: 'standalone',
@@ -76,7 +76,7 @@ export default defineNuxtConfig({
       meta: [
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        { name: 'apple-mobile-web-app-title', content: 'Alcoolémie' },
+        { name: 'apple-mobile-web-app-title', content: 'Alcoolytics' },
       ],
     },
   }

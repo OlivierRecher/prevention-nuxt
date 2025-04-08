@@ -1,5 +1,9 @@
 <script setup>
 useHead({
+  title: "Alcoolytics",
+  htmlAttrs: {
+    lang: "fr"
+  },
   meta: [
     {
       name: "viewport",
