@@ -1,7 +1,7 @@
 <script setup>
 import { getFormData, setFormData, clearFormData, clearConsumptionHistory } from '@/stores/store.js';
 
-const step = ref(1)
+const step = ref(null)
 const formData = ref({
   timeAssimilation: 15,
   gender: null,
@@ -11,6 +11,7 @@ const genderList = ref(['Homme', 'Femme', 'Autre']);
 const isKeyboardOpen = ref(false);
 
 onMounted(() => {
+  step.value = 1;
   loadStoredData();
   window.visualViewport?.addEventListener("resize", updateButtonPosition);
 });
@@ -23,6 +24,7 @@ const loadStoredData = () => {
   const storedData = getFormData();
   if (!storedData) return;
   formData.value = JSON.parse(storedData);
+  step.value = 5;
   return;
 };
 
@@ -111,7 +113,7 @@ watch(formData, (newData) => {
       />
     </div>
     <UButton
-      v-if="step !== 5"
+      v-if="step && step !== 5"
       :label="step === 1 ? 'Démarrer' : 'Suivant'"
       trailing-icon="i-lucide-arrow-right"
       size="xl"
