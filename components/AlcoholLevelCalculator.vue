@@ -2,6 +2,7 @@
 import { getConsumptionHistory, setConsumptionHistory } from '@/stores/store.js';
 
 const alcoholLevel = ref(0);
+const alcoholLevelPeak = ref(0);
 const genderFactor = ref(0);
 const potentialAlcoholEliminationByVomiting = ref(0);
 const timeStartDrinking = ref(null);
@@ -52,17 +53,28 @@ function calculateBloodAlcoholLevel() {
     alcoholLevel.value += consumption.amount / (props.weight * genderFactor.value);
   });
   alcoholLevel.value = parseFloat(alcoholLevel.value.toFixed(2));
+  alcoholLevelPeak.value = alcoholLevel.value;
 }
 
-// Chaque heure c'est -0,10g/L, soit -0,01g/L tout les 6min, soit -0,0025g/L tout les 1min30 
+// Chaque heure c'est -0,10g/L, soit -0,01g/L tout les 6min, soit -0,0025g/L tout les 1min30
+// pas totalement ok car réduit bien tout les 6min par rapport au dernier verre mais ne prends pas en compte la réduction depuis le début
 const decreaseAlcoholLevel = () => {
-  if (alcoholLevel.value > 0) {
-    alcoholLevel.value = parseFloat(Math.max(0, alcoholLevel.value - 0.01).toFixed(2));
-    calculateTime();
+  if (alcoholLevel.value === 0 || !timeStartDrinking.value && !alcoholLevelPeak.value) {
     return;
   }
-  clearInterval(intervalID);
-  intervalID = null;
+
+  const now = new Date();
+  const lastTimeDrinking = consumptionHistory.value[consumptionHistory.value.length - 1].time;
+  const elapsedTimeInMinutes = (now - new Date(lastTimeDrinking)) / (1000 * 60);
+  const alcoholReduction = Math.floor(elapsedTimeInMinutes / 6) * 0.01; // Réduction de 0.01 g/L toutes les 6 minutes
+
+  alcoholLevel.value = parseFloat(Math.max(0, alcoholLevelPeak.value - alcoholReduction).toFixed(2));
+  calculateTime();
+
+  if (alcoholLevel.value === 0) {
+    clearInterval(intervalID);
+    intervalID = null;
+  }
 };
 
 const calculateTime = () => {
@@ -92,7 +104,7 @@ const EliminationByVomiting = () => {
 
 watch(alcoholLevel, (newVal) => {
   if (newVal > 0 && !intervalID) {
-    intervalID = setInterval(decreaseAlcoholLevel, 6 * 60 * 1000);
+    intervalID = setInterval(decreaseAlcoholLevel, 1000);
   }
 });
 </script>
