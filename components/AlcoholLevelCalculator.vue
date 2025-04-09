@@ -22,13 +22,13 @@ const props = defineProps({
 onMounted(() => {
   hasDrawerOpened.value = false;
   genderFactor.value = props.gender === "Homme" ? 0.68 : props.gender === "Femme" ? 0.55 : (0.68 + 0.55) / 2;
-  const storedData = getConsumptionHistory();
+  // const storedData = getConsumptionHistory();
 
-  if (!storedData) return;
-  consumptionHistory.value = storedData;
+  // if (!storedData) return;
+  // consumptionHistory.value = storedData;
 
-  if (consumptionHistory.value.length < 1) return;
-  timeStartDrinking.value = consumptionHistory.value[0].time;
+  // if (consumptionHistory.value.length < 1) return;
+  // timeStartDrinking.value = consumptionHistory.value[0].time;
   calculateBloodAlcoholLevel();
   calculateTime();
 });
@@ -38,6 +38,7 @@ function addDrink (amount) {
   consumptionHistory.value.push({
     time: now,
     amount: amount,
+    isDispersed: false,
   });
   if (timeStartDrinking.value === null) {
     timeStartDrinking.value = consumptionHistory.value[0].time;
@@ -47,12 +48,26 @@ function addDrink (amount) {
   calculateTime();
 }
 
+function calculateDispersedDelta(lastAlcoholLevel) {
+  const lastAmount = consumptionHistory.value
+    .filter(consumption => !consumption.isDispersed)[0]?.amount || 0;
+  const expectedAlcoholIncrease = (lastAmount / (props.weight * genderFactor.value)).toFixed(2);
+  const projectedAlcoholLevel = (parseFloat(lastAlcoholLevel) + parseFloat(expectedAlcoholIncrease)).toFixed(2);
+  const adjustmentDelta = Math.abs(alcoholLevel.value - projectedAlcoholLevel);
+
+  return Math.max(0, alcoholLevel.value - adjustmentDelta).toFixed(2);
+}
+
 function calculateBloodAlcoholLevel() {
+  const lastAlcoholLevel = alcoholLevel.value;
   alcoholLevel.value = 0;
-  consumptionHistory.value.forEach((consumption) => {
-    alcoholLevel.value += consumption.amount / (props.weight * genderFactor.value);
-  });
-  alcoholLevel.value = parseFloat(alcoholLevel.value.toFixed(2));
+
+  consumptionHistory.value
+    .filter(consumption => !consumption.isDispersed)
+    .forEach((consumption) => {
+      alcoholLevel.value += consumption.amount / (props.weight * genderFactor.value);
+    });
+  alcoholLevel.value = calculateDispersedDelta(lastAlcoholLevel)
   alcoholLevelPeak.value = alcoholLevel.value;
 }
 
@@ -65,12 +80,21 @@ const decreaseAlcoholLevel = () => {
 
   const now = new Date();
   const lastTimeDrinking = consumptionHistory.value[consumptionHistory.value.length - 1].time;
-  const elapsedTimeInMinutes = (now - new Date(lastTimeDrinking)) / (1000 * 60);
-  const alcoholReduction = Math.floor(elapsedTimeInMinutes / 6) * 0.01; // Réduction de 0.01 g/L toutes les 6 minutes
+  const elapsedTimeInMinutes = (now - new Date(lastTimeDrinking)) / (10 * 60);
+  const alcoholReduction = Math.floor(elapsedTimeInMinutes) * 0.01; // Réduction de 0.01 g/L toutes les 6 minutes
 
   alcoholLevel.value = parseFloat(Math.max(0, alcoholLevelPeak.value - alcoholReduction).toFixed(2));
+  let ElimimatedAmount = (props.weight * genderFactor.value) * alcoholReduction;
+  consumptionHistory.value
+    .filter(consumption => !consumption.isDispersed)
+    .forEach((consumption) => {
+      if (ElimimatedAmount > consumption.amount) {
+        consumption.isDispersed = true;
+        ElimimatedAmount -= consumption.amount;
+      }
+    });
   calculateTime();
-
+  setConsumptionHistory(consumptionHistory.value);
   if (alcoholLevel.value === 0) {
     clearInterval(intervalID);
     intervalID = null;
